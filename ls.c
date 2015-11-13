@@ -74,7 +74,8 @@ int
 main(int argc, char *argv[])
 {
   int i;
-
+  int raj=hello();
+  printf(1,"%d\n",raj);
   if(argc < 2){
     ls(".");
     exit();
