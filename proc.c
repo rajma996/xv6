@@ -44,11 +44,13 @@ allocproc(void)
   release(&ptable.lock);
   return 0;
 
-found:
+found:  
   p->state = EMBRYO;
   p->pid = nextpid++;
   release(&ptable.lock);
-
+  p->ctime = ticks; // make ctime as the starting time .
+  p->rtime = 0; // initialize clock ticks used as 0
+  
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
     p->state = UNUSED;
@@ -281,9 +283,17 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       proc = p;
+
+      int start = ticks;
+
       switchuvm(p);
       p->state = RUNNING;
       swtch(&cpu->scheduler, proc->context);
+
+      int end = ticks;
+
+      p->rtime = p->rtime+end-start;
+      p->etime = p->ctime-p->rtime;
       switchkvm();
 
       // Process is done running for now.

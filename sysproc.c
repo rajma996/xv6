@@ -93,5 +93,5 @@ sys_uptime(void)
 int
 sys_hello(void)
 {
-    return 8;
+    return proc->rtime;
 }
